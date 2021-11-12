@@ -1,0 +1,36 @@
+\mode<presentation>
+
+% Beamer has dimensions of 12.8cm x 9.6cm
+\setbeamertemplate{background}{
+    \begin{tikzpicture}
+        \useasboundingbox (0,0) rectangle(\the\paperwidth, \the\paperheight);
+        \node[anchor=north west, yshift=-0.4cm] at (current page.north west) {\includegraphics[height=0.875cm]{CULogo/CarletonWide_Tag_K_186.pdf}};
+        \fill[color=cured] (2.6,7.725) rectangle (\the\paperwidth,\the\paperheight);
+        \fill[color=cublk] (0,0) rectangle(2.5,7.625);
+        \ifnum\thepage<2\relax%
+            \fill[color=cured] (2.6,0) rectangle(\the\paperwidth, 7.625);
+        \fi
+    \end{tikzpicture}
+}
+
+% Title Page
+\defbeamertemplate*{title page}{cu}[1][]
+{
+    \vskip4cm%
+    \begin{beamercolorbox}[wd=12cm,leftskip=0.5cm,sep=8pt,#1]{title page header} 
+        \usebeamerfont{title}\inserttitle\par%
+        \vskip0.1cm%
+        \usebeamerfont{subtitle}\insertsubtitle\par%
+        \vskip0.9cm%
+        \usebeamerfont{author}\insertauthor%
+        \vskip0.2cm%
+        \usebeamerfont{author}\insertdate%
+    \end{beamercolorbox}%
+    \vfill
+}
+
+\setbeamertemplate{items}[square]
+\setbeamertemplate{sections/subsections in toc}[square]
+
+\mode<all>
+        

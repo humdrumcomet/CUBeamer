@@ -1,0 +1,261 @@
+\mode<presentation>
+
+\setbeamersize{sidebar width left=2.5cm}
+
+% Frame Title
+\defbeamertemplate*{frametitle}{cu}[1][]
+{
+    \vskip1cm%
+    \begin{beamercolorbox}[wd=\paperwidth,ht=0.75cm]{frametitle}
+        \begin{tikzpicture}
+            \useasboundingbox(0,0) rectangle(\the\paperwidth,\the\paperheight);
+            \fill[color=cured] (2.6,7.725) rectangle(\the\paperwidth, \the\paperheight);
+            \ifx\insertframesubtitle\@empty%
+                {\node[anchor=west,white,font=\large] at (0.2,0.6){\insertframetitle};}
+            \else%
+                {\node[anchor=west, white, font=\large] at (0.2,0.8){\insertframetitle};%
+                \node[anchor=west, white, font=\small] at (0.4, 0.4){\insertframesubtitle};}%
+            \fi
+        \end{tikzpicture}
+    \end{beamercolorbox}
+}
+
+% Side progress bar
+\makeatletter
+
+\newcommand{\my@bigsize}{5}
+\newcommand{\my@medsize}{5}
+\newcommand{\my@smallsize}{5}
+
+\newlength{\my@tempsize}
+
+\newcounter{my@sectnum}
+\newcounter{my@slidenum}
+
+\newcommand{\my@lastdigit}[1]{%
+    \loop\ifnum\value{#1}>9\addtocounter{#1}{-10}\repeat
+    \arabic{#1}%
+}
+
+\newcommand\my@fixedbox[2]{%
+    \makebox[#1]{\rule[-1ex]{0pt}{3.25ex}\color{white}\usebeamerfont{author}#2}%
+}
+
+\newcommand\my@colorbox[3]{%
+    {\setlength{\fboxsep}{0pt}\colorbox{#1}{\my@fixedbox{#2}{#3}}}%
+}
+
+\def\my@temptext{}
+
+\newcommand{\my@navbox}[1][]{%
+    \if\relax\detokenize{#1}\relax
+        \def\my@tempbox{\my@fixedbox}%
+    \else%
+        \def\my@tempbox{\my@colorbox{#1}}%
+    \fi%
+    \ifx\my@box\my@bigbox%
+        \def\my@temptext{\usebeamerfont{subsection in sidebar}\color{white}$\boldsymbol{\triangleright}$}%
+    \fi%
+    \ifx\my@box\my@medbox%
+        \def\my@temptext{\usebeamerfont{subsection in sidebar}\color{white}$\boldsymbol{\circ}$}%
+    \fi%
+    \ifx\my@box\my@smallbox%
+        \def\my@temptext{\usebeamerfont{subsection in sidebar}\color{white}$\boldsymbol{-}$}%
+    \fi%
+    \my@tempbox{\my@tempsize}{\my@temptext}%
+}
+
+\defbeamertemplate{navigation box}{home}{%
+    \setlength{\my@tempsize}{\my@box@size pt}%
+    \my@colorbox{cured}{\my@tempsize}{$\equiv$}%
+}
+
+\defbeamertemplate{navigation box}{done}{%
+    \setlength{\my@tempsize}{\my@box@size pt}%
+    \my@navbox[cured]%
+}
+
+\defbeamertemplate{navigation box}{todo}{%
+    \setlength{\my@tempsize}{\my@box@size pt}%
+    \my@navbox[cublk]
+}
+
+\newcommand{\my@bigbox}{\global\let\my@box@size=\my@bigsize\usebeamertemplate{navigation box}}
+\newcommand{\my@medbox}{\global\let\my@box@size=\my@medsize\usebeamertemplate{navigation box}}
+\newcommand{\my@smallbox}{\global\let\my@box@size=\my@smallsize\usebeamertemplate{navigation box}}
+
+% Internal insertverticalnavigation macro
+\def\insertverticalnavigation{%
+    \begin{columns}
+        \begin{column}[t]{0.05\textwidth}
+            \begin{tikzpicture}
+                \useasboundingbox(0.075,0) rectangle(\the\paperwidth, \the\paperheight);
+                \node[anchor=north west] at (0, 7.6){%
+                    \vbox to \paperheight{%
+                        \parskip=-2.1pt
+                        \def\sectionentry##1##2##3##4##5{%
+                            \global\let\my@box=\my@bigbox%
+                        }%
+                        \def\beamer@subsectionentry##1##2##3##4##5{%
+                            \global\let\my@box=\my@medbox
+                        }%
+                        \def\slideentry##1##2##3##4##5##6{%
+                            \def\my@temp@i{1/1}%
+                            \def\my@temp@ii{##4}%
+                            \vskip0pt
+                            \ifx\my@temp@i\my@temp@ii % title page
+                                \setbeamertemplate{navigation box}[home]%
+                            \else
+                                \setbeamertemplate{navigation box}[done]%
+                            \fi
+                            \ifnum\c@section<##1%
+                                \setbeamertemplate{navigation box}[todo]%
+                            \else
+                                \ifnum\c@section=##1
+                                    \ifnum\c@subsection<##2%
+                                        \setbeamertemplate{navigation box}[todo]%
+                                    \else
+                                        \ifnum\c@subsection=##2
+                                            \ifnum\c@subsectionslide<##3%
+                                                \setbeamertemplate{navigation box}[todo]%
+                                            \fi
+                                        \fi
+                                    \fi
+                                \fi
+                            \fi
+                            \ifx\my@temp@i\my@temp@ii
+                                \beamer@link(##4){\my@smallbox}%
+                            \else
+                                \beamer@link(##4){\my@box}%
+                            \fi%
+                            \global\let\my@box=\my@smallbox%
+                        }%
+                        \dohead%
+                    }%
+                };%
+            \end{tikzpicture}
+        \end{column}
+        \begin{column}[t]{0.95\textwidth}
+            \begin{tikzpicture}
+                \useasboundingbox(0.5,0) rectangle(\the\paperwidth, 7.625);
+                \node[anchor=north west] at (0, 7.625){%
+                    \begin{varwidth}{1.8cm}
+                    %\vbox to \paperheight{%
+                        \def\sectionentry##1##2##3##4##5{%
+                            \vskip1pt
+                            \ifnum##5=\c@part%
+                                \def\insertsectionhead{##2}%
+                                \def\insertsectionheadnumber{##1}%
+                                \def\insertpartheadnumber{##5}%
+                                \vskip0pt
+                                %\hbox{{%
+                                    \hyperlink{Navigation##3}{%
+                                        \ifnum\c@section=##1%
+                                            \ifnum\c@subsection=0\relax%
+                                                {\usebeamertemplate{section in sidebar}}%
+                                            \else%
+                                                \ifx\beamer@nav@css\beamer@hidetext%
+                                                    {\usebeamertemplate{section in sidebar}}%
+                                                \else%
+                                                    {\usebeamertemplate{section in sidebar}}%
+                                                \fi%
+                                            \fi%
+                                        \else%
+                                            {\usebeamertemplate{section in sidebar shaded}}%
+                                        \fi%
+                                    }%
+                                %}}%
+                                \vskip2pt
+                                \beamer@currentsubsection=0\relax%
+                            \fi%
+                        }%
+                        \def\slideentry##1##2##3##4##5##6{}%
+                        \def\beamer@subsectionentry##1##2##3##4##5{%
+                            \ifnum##1=\c@part%
+                                \def\insertpartheadnumber{##1}%
+                                \def\insertsectionheadnumber{##2}%
+                                \def\insertsubsectionheadnumber{##3}%
+                                \def\insertsubsectionhead{##5}%
+                                \beamer@tocifnothide{%
+                                    \ifnum\c@section=##2%
+                                        \ifnum\c@subsection=##3%
+                                            \beamer@nav@css%
+                                        \else%
+                                            \beamer@nav@oss%
+                                        \fi%
+                                    \else%
+                                        \beamer@nav@ooss%
+                                    \fi%
+                                }%
+                                \vskip0pt
+                                {%\hbox{{%
+                                    \hskip4pt
+                                    \usebeamerfont{subsection in sidebar}\color{white}%
+                                    \hyperlink{Navigation##4}{%
+                                        \ifnum\c@section=##2%
+                                            \ifnum\c@subsection=##3%
+                                                \ifnum\c@subsubsection=0\relax%
+                                                    {\usebeamertemplate{subsection in sidebar}}%
+                                                \else%
+                                                    {\usebeamertemplate{subsection in sidebar}}%
+                                                \fi%
+                                            \else%
+                                                {\usebeamertemplate{subsection in sidebar shaded}}%
+                                            \fi%
+                                        \else%
+                                            {\usebeamertemplate{subsection in sidebar shaded}}%
+                                        \fi%
+                                    }%
+                                %}}%
+                                }%
+                                \vskip2pt
+                            \fi%
+                        }%
+                        \dohead%
+                    %}%
+                \end{varwidth}
+                };%
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+}
+
+\defbeamertemplate{sidebar left}{contents}{%
+    \insertverticalnavigation%
+}%
+
+% section in sidebar
+\setbeamertemplate{section in sidebar}{%
+    \usebeamerfont{section in sidebar}\color{cured}{\insertsectionhead}
+}
+
+% section in sidebar shaded
+\setbeamertemplate{section in sidebar shaded}{%
+    \usebeamerfont{section in sidebar}\color{white}{\insertsectionhead}
+}
+
+% subsection in sidebar
+\setbeamertemplate{subsection in sidebar}{%
+    \usebeamerfont{subsection in sidebar}\color{cured}{\insertsubsectionhead}
+}
+
+% subsection in sidebar shaded
+\setbeamertemplate{subsection in sidebar shaded}{%
+    \usebeamerfont{subsection in sidebar}\color{white}{\insertsubsectionhead}
+}
+
+\defbeamertemplate{navigation symbols}{slidenum}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[fg]{footline}%
+    \hspace{1em}
+    \ifnum\thepage>2\relax%
+        \insertframenumber%
+    \fi
+}
+
+\setbeamertemplate{navigation symbols}[slidenum]
+
+\setbeamertemplate{sidebar left}[contents]
+
+\makeatother
+\mode<all>
